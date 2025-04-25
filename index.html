@@ -1,40 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MQTT Web Client</title>
-    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <title>Kontrol LED ESP32</title>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body>
-    <h1>MQTT Web Client</h1>
-    <input type="text" id="message" placeholder="Ketik pesan...">
-    <button onclick="sendMessage()">Kirim</button>
-    <div id="messages"></div>
+  <h2>Kontrol LED ESP32</h2>
+  <button onclick="publish('ON')">Nyalakan LED</button>
+  <button onclick="publish('OFF')">Matikan LED</button>
 
-    <script>
-        const client = mqtt.connect('wss://broker.hivemq.com:8000/mqtt');
+  <script>
+    const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
 
-        client.on('connect', function () {
-            console.log('Terhubung ke broker MQTT');
-            client.subscribe('esp32/test', function (err) {
-                if (!err) {
-                    console.log('Berhasil berlangganan ke topik');
-                }
-            });
-        });
+    client.on("connect", () => {
+      console.log("Terhubung ke MQTT broker!");
+    });
 
-        client.on('message', function (topic, message) {
-            // Pesan diterima
-            const msgDiv = document.getElementById('messages');
-            msgDiv.innerHTML += `<p>${message.toString()}</p>`;
-        });
-
-        function sendMessage() {
-            const message = document.getElementById('message').value;
-            client.publish('esp32/test', message);
-            document.getElementById('message').value = '';
-        }
-    </script>
+    function publish(msg) {
+      client.publish("esp32/control", msg);
+      console.log("Dikirim:", msg);
+    }
+  </script>
 </body>
 </html>
